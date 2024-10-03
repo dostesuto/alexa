@@ -31,6 +31,22 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 1.2em;
+            margin: 5px;
+        }
+        .temperature-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .temp-button {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5em;
+        }
+        #temperature {
+            font-size: 2em;
+            margin: 0 20px;
         }
     </style>
 </head>
@@ -45,9 +61,13 @@
     <!-- エアコン操作画面 -->
     <div id="acScreen" class="screen">
         <h2>エアコン操作</h2>
+        <div class="temperature-control">
+            <button class="temp-button" onclick="changeTemperature(-1)">&#x25B2;</button>
+            <span id="temperature">22</span>℃ <!-- 初期温度 -->
+            <button class="temp-button" onclick="changeTemperature(1)">&#x25BC;</button>
+        </div>
         <button class="button" onclick="controlDevice('エアコン', 'オン')">エアコンをオン</button>
         <button class="button" onclick="controlDevice('エアコン', 'オフ')">エアコンをオフ</button>
-        <button class="button" onclick="controlDevice('エアコン', '温度変更')">温度変更</button>
     </div>
 
     <!-- YouTube画面 -->
@@ -98,8 +118,6 @@
                     controlDevice('エアコン', 'オン');
                 } else if (normalizedCommand.includes('オフ')) {
                     controlDevice('エアコン', 'オフ');
-                } else if (normalizedCommand.includes('温度')) {
-                    controlDevice('エアコン', '温度変更');
                 }
             } else if (normalizedCommand.includes('youtube を開いて')) {
                 changeScreen('youtube');
@@ -124,6 +142,14 @@
 
         function controlDevice(device, action) {
             alert(`${device} を ${action} にします`); // デバイス制御のアラート表示
+        }
+
+        // 温度変更の関数
+        function changeTemperature(delta) {
+            const tempElement = document.getElementById('temperature');
+            let currentTemp = parseInt(tempElement.textContent);
+            currentTemp += delta; // 温度を増減
+            tempElement.textContent = currentTemp; // 温度表示を更新
         }
 
         // YouTube APIの設定
