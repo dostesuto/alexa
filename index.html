@@ -158,8 +158,10 @@
             .then(response => response.json())
             .then(data => {
                 const temp = data.main.temp;
+                const humidity = data.main.humidity; // 湿度
+                const rainProbability = data.rain ? data.rain['1h'] : 0; // 降水確率（1時間）
                 const description = data.weather[0].description;
-                document.getElementById('weatherInfo').textContent = `${city} の天気: ${temp}℃, ${description}`;
+                document.getElementById('weatherInfo').textContent = `${city} の天気: ${temp}℃, ${description}, 湿度: ${humidity}%, 降水確率: ${rainProbability}mm`;
             })
             .catch(error => {
                 console.error('Error fetching weather:', error);
