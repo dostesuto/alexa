@@ -64,7 +64,6 @@
     <p id="transcript"></p>
 
     <script>
-        let timeout;
         const screens = {
             weather: document.getElementById('weatherScreen'),
             ac: document.getElementById('acScreen'),
@@ -80,7 +79,7 @@
         };
 
         recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
+            const transcript = event.results[0][0].transcript.trim();
             document.getElementById('transcript').textContent = transcript; // 音声を表示
 
             handleVoiceCommand(transcript); // 音声コマンドの処理
@@ -91,24 +90,22 @@
         };
 
         function handleVoiceCommand(command) {
-            clearTimeout(timeout); // タイマーリセット
+            const normalizedCommand = command.replace(/\s+/g, ' ').toLowerCase(); // 半角スペースを統一し小文字に
 
-            if (command.includes('エアコン')) {
+            if (normalizedCommand.includes('エアコン')) {
                 changeScreen('ac');
-                if (command.includes('オン')) {
+                if (normalizedCommand.includes('オン')) {
                     controlDevice('エアコン', 'オン');
-                } else if (command.includes('オフ')) {
+                } else if (normalizedCommand.includes('オフ')) {
                     controlDevice('エアコン', 'オフ');
-                } else if (command.includes('温度')) {
+                } else if (normalizedCommand.includes('温度')) {
                     controlDevice('エアコン', '温度変更');
                 }
-            } else if (command.includes('YouTube を開いて')) {
+            } else if (normalizedCommand.includes('youtubeを開いて')) {
                 changeScreen('youtube');
-            } else if (command.includes('天気')) {
-                changeScreen('weather');
+            } else if (normalizedCommand.includes('天気予報')) {
+                speakWeather(); // 天気予報を読み上げ
             }
-
-            resetTimer(); // 再度タイマーを設定
         }
 
         function changeScreen(screen) {
@@ -118,8 +115,11 @@
             screens[screen].classList.add('active');
         }
 
-        function resetTimer() {
-            timeout = setTimeout(() => changeScreen('weather'), 60000); // 1分後に天気画面に戻る
+        function speakWeather() {
+            const synth = window.speechSynthesis;
+            const weatherInfo = document.getElementById('weatherInfo').textContent;
+            const utterance = new SpeechSynthesisUtterance(weatherInfo);
+            synth.speak(utterance);
         }
 
         function controlDevice(device, action) {
@@ -167,7 +167,6 @@
         }
 
         fetchWeather(); // 天気情報の取得
-        resetTimer(); // 最初にタイマーを設定
     </script>
 
 </body>
