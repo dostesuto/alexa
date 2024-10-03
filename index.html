@@ -101,7 +101,7 @@
                 } else if (normalizedCommand.includes('温度')) {
                     controlDevice('エアコン', '温度変更');
                 }
-            } else if (normalizedCommand.includes('youtube を開いて')) {
+            } else if (normalizedCommand.includes('youtubeを開いて')) {
                 changeScreen('youtube');
             } else if (normalizedCommand.includes('天気予報')) {
                 speakWeather(); // 天気予報を読み上げ
@@ -159,9 +159,10 @@
             .then(data => {
                 const temp = data.main.temp;
                 const humidity = data.main.humidity; // 湿度
-                const rainProbability = data.rain ? data.rain['1h'] : 0; // 降水確率（1時間）
+                const rainProbability = data.rain ? data.rain['1h'] : 0; // 降水量（1時間）
+                const rainProbabilityPercent = data.rain ? (data.rain['1h'] > 0 ? 100 : 0) : 0; // 降水確率をパーセントに
                 const description = data.weather[0].description;
-                document.getElementById('weatherInfo').textContent = `${city} の天気: ${temp}℃, ${description}, 湿度: ${humidity}%, 降水確率: ${rainProbability}mm`;
+                document.getElementById('weatherInfo').textContent = `${city} の天気: ${temp}℃, ${description}, 湿度: ${humidity}%, 降水確率: ${rainProbabilityPercent}%`;
             })
             .catch(error => {
                 console.error('Error fetching weather:', error);
