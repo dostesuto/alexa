@@ -123,7 +123,7 @@
         }
 
         // YouTube APIの設定
-        const YOUTUBE_API_KEY = 'AIzaSyC4RsVaUcZT9o-YIbqu9ZT_bu2KjKOQw1M'; // ここにあなたのYouTube APIキーを入力
+        const YOUTUBE_API_KEY = 'AIzaSyC4RsVaUcZT9o-YIbqu9ZT_bu2KjKOQw1M'; // YouTube APIキー
         const youtubeSearchUrl = 'https://www.googleapis.com/youtube/v3/search';
 
         function searchYouTube() {
@@ -148,7 +148,7 @@
 
         // 天気予報の取得
         function fetchWeather() {
-            const apiKey = '65472a36bdade11e028c87061a39b4d3'; // APIキーを設定
+            const apiKey = '65472a36bdade11e028c87061a39b4d3'; // 天気APIキー
             const city = 'Tokyo';
             fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&lang=ja&units=metric`)
             .then(response => response.json())
