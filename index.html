@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スマートホームコントロール</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .screen {
+            display: none;
+            text-align: center;
+            width: 80%;
+            height: 80%;
+        }
+        .active {
+            display: block;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 天気予報画面 -->
+    <div id="weatherScreen" class="screen active">
+        <h2>天気予報</h2>
+        <div id="weatherInfo">読み込み中...</div>
+    </div>
+
+    <!-- エアコン操作画面 -->
+    <div id="acScreen" class="screen">
+        <h2>エアコン操作</h2>
+        <button class="button" onclick="controlDevice('エアコン', 'オン')">エアコンをオン</button>
+        <button class="button" onclick="controlDevice('エアコン', 'オフ')">エアコンをオフ</button>
+        <button class="button" onclick="controlDevice('エアコン', '温度変更')">温度変更</button>
+    </div>
+
+    <!-- YouTube画面 -->
+    <div id="youtubeScreen" class="screen">
+        <h2>YouTube検索</h2>
+        <input type="text" id="youtubeQuery" placeholder="検索ワードを入力" />
+        <button class="button" onclick="searchYouTube()">検索</button>
+        <br><br>
+        <iframe id="youtubePlayer" width="100%" height="300" src="" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+
+    <!-- 音声認識ボタン -->
+    <button id="start-recognition" class="button">音声認識を開始</button>
+    <p id="transcript"></p>
+
+    <script>
+        let timeout;
+        const screens = {
+            weather: document.getElementById('weatherScreen'),
+            ac: document.getElementById('acScreen'),
+            youtube: document.getElementById('youtubeScreen')
+        };
+
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'ja-JP';
+        recognition.interimResults = false;
+
+        document.getElementById('start-recognition').onclick = () => {
+            recognition.start();
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            document.getElementById('transcript').textContent = transcript; // 音声を表示
+
+            handleVoiceCommand(transcript); // 音声コマンドの処理
+        };
+
+        function handleVoiceCommand(command) {
+            clearTimeout(timeout); // タイマーリセット
+
+            if (command.includes('エアコン')) {
+                changeScreen('ac');
+                if (command.includes('オン')) {
+                    controlDevice('エアコン', 'オン');
+                } else if (command.includes('オフ')) {
+                    controlDevice('エアコン', 'オフ');
+                } else if (command.includes('温度')) {
+                    controlDevice('エアコン', '温度変更');
+                }
+            } else if (command.includes('YouTubeを開いて')) {
+                changeScreen('youtube');
+            } else if (command.includes('天気')) {
+                changeScreen('weather');
+            }
+
+            resetTimer(); // 再度タイマーを設定
+        }
+
+        function changeScreen(screen) {
+            for (let key in screens) {
+                screens[key].classList.remove('active');
+            }
+            screens[screen].classList.add('active');
+        }
+
+        function resetTimer() {
+            timeout = setTimeout(() => changeScreen('weather'), 60000); // 1分後に天気画面に戻る
+        }
+
+        function controlDevice(device, action) {
+            alert(`${device} を ${action} にします`); // デバイス制御のアラート表示
+        }
+
+        // YouTube APIの設定
+        const YOUTUBE_API_KEY = 'AIzaSyC4RsVaUcZT9o-YIbqu9ZT_bu2KjKOQw1M'; // ここにあなたのYouTube APIキーを入力
+        const youtubeSearchUrl = 'https://www.googleapis.com/youtube/v3/search';
+
+        function searchYouTube() {
+            const query = document.getElementById('youtubeQuery').value;
+            const url = `${youtubeSearchUrl}?key=${YOUTUBE_API_KEY}&q=${encodeURIComponent(query)}&part=snippet&type=video`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.items.length > 0) {
+                        // 検索結果を表示
+                        const videoId = data.items[0].id.videoId; // 最初の動画IDを取得
+                        document.getElementById('youtubePlayer').src = `https://www.youtube.com/embed/${videoId}`; // 動画を埋め込む
+                    } else {
+                        alert('動画が見つかりませんでした。');
+                    }
+                })
+                .catch(error => {
+                    console.error('YouTube APIエラー:', error);
+                });
+        }
+
+        // 天気予報の取得
+        function fetchWeather() {
+            const apiKey = '65472a36bdade11e028c87061a39b4d3'; // APIキーを設定
+            const city = 'Tokyo';
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&lang=ja&units=metric`)
+            .then(response => response.json())
+            .then(data => {
+                const temp = data.main.temp;
+                const description = data.weather[0].description;
+                document.getElementById('weatherInfo').textContent = `${city} の天気: ${temp}℃, ${description}`;
+            })
+            .catch(error => {
+                console.error('Error fetching weather:', error);
+            });
+        }
+
+        fetchWeather(); // 天気情報の取得
+        resetTimer(); // 最初にタイマーを設定
+    </script>
+
+</body>
+</html>
