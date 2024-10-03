@@ -62,9 +62,9 @@
     <div id="acScreen" class="screen">
         <h2>エアコン操作</h2>
         <div class="temperature-control">
-            <button class="temp-button" onclick="changeTemperature(-1)">&#x25B2;</button>
+            <button class="temp-button" onclick="changeTemperature(1)">&#x25B2;</button> <!-- 温度を上げる -->
             <span id="temperature">22</span>℃ <!-- 初期温度 -->
-            <button class="temp-button" onclick="changeTemperature(1)">&#x25BC;</button>
+            <button class="temp-button" onclick="changeTemperature(-1)">&#x25BC;</button> <!-- 温度を下げる -->
         </div>
         <button class="button" onclick="controlDevice('エアコン', 'オン')">エアコンをオン</button>
         <button class="button" onclick="controlDevice('エアコン', 'オフ')">エアコンをオフ</button>
