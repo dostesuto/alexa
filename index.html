@@ -86,6 +86,10 @@
             handleVoiceCommand(transcript); // 音声コマンドの処理
         };
 
+        recognition.onerror = (event) => {
+            console.error('音声認識エラー:', event.error);
+        };
+
         function handleVoiceCommand(command) {
             clearTimeout(timeout); // タイマーリセット
 
